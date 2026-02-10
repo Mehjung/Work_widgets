@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zitat Widget</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:transparent;overflow:hidden}
+.w{max-width:480px;width:100%;padding:28px 32px;text-align:center;position:relative;animation:fi .8s ease}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.qm{font-size:64px;line-height:1;color:#ec0016;opacity:.15;font-family:Georgia,serif;position:absolute;top:8px;left:20px}
+.qt{font-size:18px;color:#1a1a2e;line-height:1.7;font-style:italic;margin-bottom:16px;position:relative;z-index:1}
+.qa{font-size:12px;font-weight:600;color:#ec0016;text-transform:uppercase;letter-spacing:1.5px}
+.qd{width:40px;height:2px;background:#ec0016;margin:12px auto;border-radius:1px;opacity:.4}
+.qc{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:2px;margin-top:8px}
+body.dark{background:#1a1a2e}body.dark .qt{color:rgba(255,255,255,.85)}body.dark .qc{color:rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+<div class="w"><div class="qm">„</div><div class="qt" id="t"></div><div class="qd"></div><div class="qa" id="a"></div><div class="qc" id="c"></div></div>
+<script>
+const P=new URLSearchParams(location.search);
+if(P.get('theme')==='dark')document.body.classList.add('dark');
+const cat=P.get('category')||'all',rot=P.get('rotate')||'daily';
+const Q=[
+{t:"Qualität bedeutet, es richtig zu machen, auch wenn niemand zuschaut.",a:"Henry Ford",c:"quality"},
+{t:"Erfolg besteht darin, von Misserfolg zu Misserfolg zu gehen, ohne seine Begeisterung zu verlieren.",a:"Winston Churchill",c:"motivation"},
+{t:"Allein können wir so wenig tun; zusammen können wir so viel erreichen.",a:"Helen Keller",c:"teamwork"},
+{t:"Die beste Zeit, einen Baum zu pflanzen, war vor zwanzig Jahren. Die zweitbeste Zeit ist jetzt.",a:"Chinesisches Sprichwort",c:"motivation"},
+{t:"Man muss das Unmögliche versuchen, um das Mögliche zu erreichen.",a:"Hermann Hesse",c:"motivation"},
+{t:"Es ist nicht genug zu wissen – man muss auch anwenden.",a:"J. W. von Goethe",c:"motivation"},
+{t:"Perfektion ist nicht erreichbar, aber wenn wir Perfektion jagen, können wir Exzellenz erreichen.",a:"Vince Lombardi",c:"quality"},
+{t:"Zusammenkommen ist ein Beginn, Zusammenbleiben ein Fortschritt, Zusammenarbeiten ist Erfolg.",a:"Henry Ford",c:"teamwork"},
+{t:"Der einzige Weg, großartige Arbeit zu leisten, ist zu lieben, was man tut.",a:"Steve Jobs",c:"motivation"},
+{t:"Ein Team ist mehr als die Summe seiner Mitglieder.",a:"Phil Jackson",c:"teamwork"},
+{t:"Wer immer tut, was er schon kann, bleibt immer das, was er schon ist.",a:"Henry Ford",c:"motivation"},
+{t:"Vertrauen ist der Anfang von allem.",a:"Deutsches Sprichwort",c:"teamwork"},
+{t:"Nicht weil es schwer ist, wagen wir es nicht, sondern weil wir es nicht wagen, ist es schwer.",a:"Seneca",c:"motivation"},
+{t:"Wer aufhört, besser zu werden, hat aufgehört, gut zu sein.",a:"Philip Rosenthal",c:"quality"},
+{t:"Das Geheimnis des Erfolgs ist anzufangen.",a:"Mark Twain",c:"motivation"},
+{t:"Einzeln sind wir Worte, zusammen ein Gedicht.",a:"Georg Bydlinski",c:"teamwork"},
+{t:"Wer das Ziel kennt, kann entscheiden. Wer entscheidet, findet Ruhe.",a:"Konfuzius",c:"motivation"},
+{t:"Die Qualität unserer Gedanken bestimmt die Qualität unseres Lebens.",a:"Marc Aurel",c:"quality"},
+{t:"Stärke wächst nicht aus körperlicher Kraft – vielmehr aus unbeugsamen Willen.",a:"Mahatma Gandhi",c:"motivation"},
+{t:"Keiner von uns ist so klug wie wir alle zusammen.",a:"Ken Blanchard",c:"teamwork"},
+];
+const custom=P.get('custom');
+let qs=custom?custom.split(';;').map(r=>{const[t,a,c]=r.split('|');return{t,a:a||'',c:c||'custom'}}):Q;
+if(cat!=='all'){const f=qs.filter(q=>q.c===cat);if(f.length)qs=f}
+let i=0;
+if(rot==='daily'){const dy=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5);i=dy%qs.length}
+else if(rot==='hourly'){const dy=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5);i=(dy*24+new Date().getHours())%qs.length}
+else i=Math.floor(Math.random()*qs.length);
+const q=qs[i];
+document.getElementById('t').textContent=q.t;
+document.getElementById('a').textContent='— '+q.a;
+const cl={motivation:'Motivation',teamwork:'Teamwork',quality:'Qualität',custom:'Tipp des Tages'};
+document.getElementById('c').textContent=cl[q.c]||q.c;
+</script>
+</body>
+</html>

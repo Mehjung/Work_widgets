@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalender Widget</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:transparent;overflow:hidden}
+.cal{width:100%;max-width:320px;padding:16px}
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.mo{font-size:16px;font-weight:700;color:#1a1a2e}
+.yr{font-weight:400;color:#888}
+.nav{display:flex;gap:4px}
+.nav button{width:28px;height:28px;border-radius:6px;border:1px solid #e5e5e5;background:#fff;cursor:pointer;font-size:14px;color:#888;display:flex;align-items:center;justify-content:center}
+.nav button:hover{background:#f0f0f0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dow{text-align:center;font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:1px;padding:4px 0 8px}
+.day{text-align:center;font-size:13px;padding:7px 4px;border-radius:8px;color:#333;cursor:default;font-weight:500;position:relative}
+.day.other{color:#ccc}.day.today{background:#ec0016;color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(236,0,22,.3)}
+.day.we{color:#999}.day.hol{background:rgba(236,0,22,.06)}
+.day.marked::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#0ea5e9}
+.ft{margin-top:12px;padding-top:10px;border-top:1px solid #eee;font-size:11px;color:#888;text-align:center}
+.ft strong{color:#1a1a2e}
+.kw{text-align:center;font-size:10px;color:#ccc;padding:7px 2px}
+body.show-kw .grid{grid-template-columns:24px repeat(7,1fr)}
+body.dark{background:#1a1a2e}body.dark .mo{color:#fff}body.dark .day{color:rgba(255,255,255,.7)}body.dark .day.other{color:rgba(255,255,255,.2)}body.dark .day.we{color:rgba(255,255,255,.35)}body.dark .ft{border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}body.dark .ft strong{color:#fff}body.dark .nav button{background:#16213e;border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.5)}body.dark .dow{color:rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+<div class="cal">
+    <div class="hdr"><div class="mo" id="ml"></div><div class="nav"><button id="pv">‹</button><button id="tb">●</button><button id="nx">›</button></div></div>
+    <div class="grid" id="g"></div>
+    <div class="ft" id="ft"></div>
+</div>
+<script>
+const P=new URLSearchParams(location.search);
+if(P.get('theme')==='dark')document.body.classList.add('dark');
+if(P.get('kw')==='true')document.body.classList.add('show-kw');
+const marked=(P.get('marked')||'').split(',').map(Number).filter(Boolean);
+const hols=(P.get('holidays')||'').split(',').map(Number).filter(Boolean);
+const showKW=P.get('kw')==='true';
+const mos=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const dw=['Mo','Di','Mi','Do','Fr','Sa','So'];
+const today=new Date();let vM=today.getMonth(),vY=today.getFullYear();
+function gW(d){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()+3-((t.getDay()+6)%7));const w=new Date(t.getFullYear(),0,4);return 1+Math.round(((t-w)/864e5-3+((w.getDay()+6)%7))/7)}
+function render(){
+    const g=document.getElementById('g');g.innerHTML='';
+    if(showKW)g.innerHTML+='<div class="kw">KW</div>';
+    dw.forEach((d,i)=>g.innerHTML+=`<div class="dow${i>=5?' we':''}">${d}</div>`);
+    const first=new Date(vY,vM,1);let sd=(first.getDay()+6)%7;
+    const dim=new Date(vY,vM+1,0).getDate(),dip=new Date(vY,vM,0).getDate();
+    let dn=1,nd=1;const isCur=vM===today.getMonth()&&vY===today.getFullYear();
+    for(let r=0;r<6;r++){
+        if(showKW)g.innerHTML+=`<div class="kw">${gW(new Date(vY,vM,Math.max(1,1+r*7-sd)))}</div>`;
+        for(let c=0;c<7;c++){
+            const ci=r*7+c;let cls=['day'],disp='';
+            if(ci<sd){disp=dip-sd+ci+1;cls.push('other')}
+            else if(dn>dim){disp=nd++;cls.push('other')}
+            else{disp=dn;if(c>=5)cls.push('we');if(isCur&&dn===today.getDate())cls.push('today');if(marked.includes(dn))cls.push('marked');if(hols.includes(dn))cls.push('hol');dn++}
+            g.innerHTML+=`<div class="${cls.join(' ')}">${disp}</div>`;
+        }
+        if(dn>dim&&r>=3)break;
+    }
+    document.getElementById('ml').innerHTML=`${mos[vM]} <span class="yr">${vY}</span>`;
+    const dl=isCur?dim-today.getDate():'';const kn=isCur?gW(today):gW(first);
+    document.getElementById('ft').innerHTML=isCur?`<strong>KW ${kn}</strong> · Noch ${dl} Tage`:`<strong>KW ${gW(first)}</strong> – <strong>KW ${gW(new Date(vY,vM,dim))}</strong>`;
+}
+document.getElementById('pv').onclick=()=>{vM--;if(vM<0){vM=11;vY--}render()};
+document.getElementById('nx').onclick=()=>{vM++;if(vM>11){vM=0;vY++}render()};
+document.getElementById('tb').onclick=()=>{vM=today.getMonth();vY=today.getFullYear();render()};
+render();
+</script>
+</body>
+</html>

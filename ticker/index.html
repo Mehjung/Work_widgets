@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticker Widget</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden}
+.tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
+.tr{display:flex;white-space:nowrap;animation:sc var(--dur,30s) linear infinite}
+.tr:hover{animation-play-state:paused}
+@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
+.ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
+.ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.badge.wichtig{background:#ec0016;color:#fff}.badge.info{background:#0ea5e9;color:#fff}
+.badge.erfolg{background:#16a34a;color:#fff}.badge.termin{background:#f59e0b;color:#fff}
+.sep{display:inline-flex;padding:0 24px;color:#ddd;font-size:16px}
+.lbl{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:#ec0016;color:#fff}
+.lbl::after{content:'';position:absolute;right:-12px;top:0;bottom:0;width:12px;background:linear-gradient(90deg,rgba(0,0,0,.1),transparent)}
+.has-lbl .tk{padding-left:100px}
+body.dark{background:#1a1a2e}body.dark .ti{color:rgba(255,255,255,.7)}body.dark .sep{color:rgba(255,255,255,.15)}
+</style>
+</head>
+<body>
+<div style="width:100%;position:relative" id="wr">
+    <div class="tk"><div class="tr" id="tr"></div></div>
+</div>
+<script>
+const P=new URLSearchParams(location.search);
+if(P.get('theme')==='dark')document.body.classList.add('dark');
+const speed=parseInt(P.get('speed')||'30'),label=P.get('label')||'';
+const raw=P.get('items')||'Wichtig|Entgeltabschluss Februar – Abgabefrist: 28.02.2026;;Info|ZEF 4.0 Update ab KW 8 verfügbar;;Erfolg|Januar-Abschluss mit Bestwert abgeschlossen;;Termin|Team-Meeting am 12.02. um 10:00 Uhr;;Info|Neue Kollegin Maria Berger ab 01.03.';
+const items=raw.split(';;').map(r=>{const[b,t]=r.includes('|')?r.split('|',2):['',r];return{b:b.trim().toLowerCase(),t:t.trim()}});
+function build(){return items.map(i=>{const bh=i.b?`<span class="badge ${i.b}">${i.b}</span>`:'<span class="dot"></span>';return`<span class="ti">${bh} ${i.t}</span><span class="sep">◆</span>`}).join('')}
+const tr=document.getElementById('tr');tr.innerHTML=build()+build();tr.style.setProperty('--dur',speed+'s');
+if(label){const w=document.getElementById('wr');w.classList.add('has-lbl');const l=document.createElement('div');l.className='lbl';l.textContent=label;w.insertBefore(l,w.firstChild)}
+</script>
+</body>
+</html>
