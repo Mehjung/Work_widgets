@@ -8,8 +8,25 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden;-webkit-font-smoothing:antialiased}
 .tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
-.tr{display:inline-flex;white-space:nowrap;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
+
+.tr{
+    display:flex;
+    width:max-content;
+    animation:scroll var(--dur,30s) linear infinite;
+    will-change:transform;
+    transform:translate3d(0,0,0);
+    backface-visibility:hidden;
+}
+.tr:hover{animation-play-state:paused}
+@keyframes scroll{to{transform:translate3d(-50%,0,0)}}
+
+.half{
+    display:flex;
+    align-items:center;
+    min-width:100vw;
+    flex-shrink:0;
+}
+.ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333;white-space:nowrap;flex-shrink:0}
 .ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
 .ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
 .badge.wichtig{background:#ec0016;color:#fff}
@@ -17,10 +34,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;alig
 .badge.erfolg{background:#16a34a;color:#fff}
 .badge.termin{background:#f59e0b;color:#fff}
 .badge.hinweis{background:#8b5cf6;color:#fff}
-.sep{display:inline-flex;padding:0 24px;color:#ddd;font-size:16px}
+.sep{display:inline-flex;padding:0 24px;color:#ddd;font-size:16px;flex-shrink:0}
 .lbl{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:#ec0016;color:#fff}
 .lbl::after{content:'';position:absolute;right:-12px;top:0;bottom:0;width:12px;background:linear-gradient(90deg,rgba(0,0,0,.1),transparent)}
 .has-lbl .tk{padding-left:100px}
+/* With label, halves must cover remaining width */
+.has-lbl .half{min-width:calc(100vw - 100px)}
 body.dark{background:#1a1a2e}
 body.dark .ti{color:rgba(255,255,255,.7)}
 body.dark .sep{color:rgba(255,255,255,.15)}
@@ -34,7 +53,6 @@ body.dark .sep{color:rgba(255,255,255,.15)}
 <script>
 const P=new URLSearchParams(location.search);
 if(P.get('theme')==='dark') document.body.classList.add('dark');
-
 const speed=parseInt(P.get('speed')||'30');
 const label=P.get('label')||'';
 
@@ -52,8 +70,7 @@ const items=loadData();
 
 if(!items.length){
     document.getElementById('wr').innerHTML='<div class="empty">Keine Nachrichten konfiguriert</div>';
-} else {
-    // Add label first (affects available width)
+}else{
     if(label){
         const w=document.getElementById('wr');
         w.classList.add('has-lbl');
@@ -62,58 +79,17 @@ if(!items.length){
         w.insertBefore(l,w.firstChild);
     }
 
-    function itemsHtml(){
-        return items.map(i=>{
-            const bh=i.badge?`<span class="badge ${i.badge}">${i.badge}</span>`:'<span class="dot"></span>';
-            return`<span class="ti">${bh} ${i.text}</span><span class="sep">◆</span>`;
-        }).join('');
-    }
+    const html=items.map(i=>{
+        const bh=i.badge?`<span class="badge ${i.badge}">${i.badge}</span>`:'<span class="dot"></span>';
+        return`<span class="ti">${bh} ${i.text}</span><span class="sep">◆</span>`;
+    }).join('');
 
-    // Wait for full layout (fonts, iframe resize, etc.)
-    window.addEventListener('load', initTicker);
-    // Fallback if load already fired
-    if(document.readyState==='complete') setTimeout(initTicker, 50);
-
-    let inited=false;
-    function initTicker(){
-        if(inited) return;
-        inited=true;
-
-        const tr=document.getElementById('tr');
-        if(!tr) return;
-        const html=itemsHtml();
-
-        // Step 1: render one set, measure its width
-        tr.innerHTML=html;
-        requestAnimationFrame(()=>{
-            requestAnimationFrame(()=>{
-                const oneSetW=tr.scrollWidth;
-                const viewW=tr.parentElement.offsetWidth || document.body.offsetWidth || 800;
-
-                // Step 2: repeat enough to fill 2x viewport minimum
-                const reps=Math.max(2, Math.ceil((viewW*3)/oneSetW));
-                let block='';
-                for(let i=0;i<reps;i++) block+=html;
-                const blockW=oneSetW*reps;
-
-                // Step 3: two identical blocks = seamless loop
-                tr.innerHTML=block+block;
-
-                // Step 4: animate scrolling exactly one block width
-                // Duration scales with content length for consistent perceived speed
-                const baseDuration=speed*(blockW/viewW);
-                tr.style.animation=`sc ${baseDuration}s linear infinite`;
-
-                // Inject dynamic keyframe
-                const style=document.createElement('style');
-                style.textContent=`@keyframes sc{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-${blockW}px,0,0)}}`;
-                document.head.appendChild(style);
-            });
-        });
-    }
+    const tr=document.getElementById('tr');
+    // Exactly 2 identical halves – each fills at least 100vw
+    tr.innerHTML=`<div class="half">${html}</div><div class="half">${html}</div>`;
+    tr.style.setProperty('--dur', speed+'s');
 }
 
-// Label (if not already added above)
 if(label && !document.querySelector('.lbl')){
     const w=document.getElementById('wr');
     w.classList.add('has-lbl');
