@@ -9,10 +9,6 @@
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden;-webkit-font-smoothing:antialiased}
 .tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
 .tr{display:inline-flex;white-space:nowrap;will-change:transform}
-.tr.running{animation:sc var(--dur) linear infinite}
-.tr:hover{animation-play-state:paused}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(var(--dist))}}
-.set{display:inline-flex;white-space:nowrap}
 .ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
 .ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
 .ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
@@ -56,7 +52,16 @@ const items=loadData();
 
 if(!items.length){
     document.getElementById('wr').innerHTML='<div class="empty">Keine Nachrichten konfiguriert</div>';
-}else{
+} else {
+    // Add label first (affects available width)
+    if(label){
+        const w=document.getElementById('wr');
+        w.classList.add('has-lbl');
+        const l=document.createElement('div');
+        l.className='lbl';l.textContent=label;
+        w.insertBefore(l,w.firstChild);
+    }
+
     function itemsHtml(){
         return items.map(i=>{
             const bh=i.badge?`<span class="badge ${i.badge}">${i.badge}</span>`:'<span class="dot"></span>';
@@ -64,31 +69,52 @@ if(!items.length){
         }).join('');
     }
 
-    const tr=document.getElementById('tr');
-    const html=itemsHtml();
+    // Wait for full layout (fonts, iframe resize, etc.)
+    window.addEventListener('load', initTicker);
+    // Fallback if load already fired
+    if(document.readyState==='complete') setTimeout(initTicker, 50);
 
-    // 1) Render one set to measure its width
-    tr.innerHTML=`<span class="set" id="measure">${html}</span>`;
-    const setWidth=document.getElementById('measure').getBoundingClientRect().width;
+    let inited=false;
+    function initTicker(){
+        if(inited) return;
+        inited=true;
 
-    // 2) How many copies to fill at least 1 full viewport
-    const copies=Math.max(1, Math.ceil(window.innerWidth/setWidth));
+        const tr=document.getElementById('tr');
+        if(!tr) return;
+        const html=itemsHtml();
 
-    // 3) Build one "half" that's guaranteed wider than viewport
-    let halfHtml='';
-    for(let i=0;i<copies;i++) halfHtml+=html;
+        // Step 1: render one set, measure its width
+        tr.innerHTML=html;
+        requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{
+                const oneSetW=tr.scrollWidth;
+                const viewW=tr.parentElement.offsetWidth || document.body.offsetWidth || 800;
 
-    // 4) Two identical halves: A B A B → scroll A away, B takes over seamlessly
-    tr.innerHTML=`<span class="set" id="halfA">${halfHtml}</span><span class="set">${halfHtml}</span>`;
+                // Step 2: repeat enough to fill 2x viewport minimum
+                const reps=Math.max(2, Math.ceil((viewW*3)/oneSetW));
+                let block='';
+                for(let i=0;i<reps;i++) block+=html;
+                const blockW=oneSetW*reps;
 
-    // 5) Measure the exact half-width and set as scroll distance
-    const halfWidth=document.getElementById('halfA').getBoundingClientRect().width;
-    tr.style.setProperty('--dist', `-${halfWidth}px`);
-    tr.style.setProperty('--dur', `${speed}s`);
-    tr.classList.add('running');
+                // Step 3: two identical blocks = seamless loop
+                tr.innerHTML=block+block;
+
+                // Step 4: animate scrolling exactly one block width
+                // Duration scales with content length for consistent perceived speed
+                const baseDuration=speed*(blockW/viewW);
+                tr.style.animation=`sc ${baseDuration}s linear infinite`;
+
+                // Inject dynamic keyframe
+                const style=document.createElement('style');
+                style.textContent=`@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-${blockW}px)}}`;
+                document.head.appendChild(style);
+            });
+        });
+    }
 }
 
-if(label){
+// Label (if not already added above)
+if(label && !document.querySelector('.lbl')){
     const w=document.getElementById('wr');
     w.classList.add('has-lbl');
     const l=document.createElement('div');
