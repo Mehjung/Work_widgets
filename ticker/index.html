@@ -8,9 +8,10 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden;-webkit-font-smoothing:antialiased}
 .tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
-.tr{display:flex;white-space:nowrap;animation:sc var(--dur,30s) linear infinite}
+.tr{display:flex;white-space:nowrap}
+.tr.running{animation:sc var(--dur,30s) linear infinite}
 .tr:hover{animation-play-state:paused}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(var(--scroll-dist))}}
 .ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
 .ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
 .ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
@@ -76,8 +77,16 @@ if(!items.length){
         }).join('');
     }
     const tr=document.getElementById('tr');
-    tr.innerHTML=buildHtml()+buildHtml();
+    // Render first half, measure, then duplicate
+    const oneSet=buildHtml();
+    tr.innerHTML=`<span id="half">${oneSet}</span><span>${oneSet}</span>`;
     tr.style.setProperty('--dur',speed+'s');
+    // Wait for render, then measure exact width
+    requestAnimationFrame(()=>{
+        const halfW=document.getElementById('half').offsetWidth;
+        tr.style.setProperty('--scroll-dist', `-${halfW}px`);
+        tr.classList.add('running');
+    });
 }
 
 if(label){
