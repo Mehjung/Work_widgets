@@ -12,38 +12,49 @@
     --radius:8px;--radius-sm:6px;--transition:150ms ease;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden}
 
-/* === CHEVRON SVG === */
+/* === CHEVRON === */
 .chev{width:16px;height:16px;flex-shrink:0;transition:transform 200ms cubic-bezier(.4,0,.2,1);opacity:.4}
 details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
 
 /* ========================
    VERTICAL – Sidebar
+   Overlay dropdowns
    ======================== */
 .menu-v{width:100%;padding:8px 0}
 .menu-v .menu-title{padding:10px 20px 6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3)}
+.menu-v .section{position:relative}
 .menu-v .section+.section{margin-top:2px}
-.menu-v .sec-head{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;user-select:none;transition:background var(--transition)}
+.menu-v .sec-head{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;user-select:none;transition:background var(--transition);position:relative;z-index:2}
 .menu-v .sec-head::-webkit-details-marker{display:none}
 .menu-v .sec-head:hover{background:var(--bg-hover)}
 .menu-v .sec-head:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.menu-v details[open]>.sec-head{color:var(--red);background:var(--bg-hover)}
 .menu-v .sec-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .menu-v .sec-label{flex:1}
-.menu-v .links{padding:2px 0 6px}
-.menu-v .link{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 50px;color:var(--text2);text-decoration:none;font-size:13px;transition:all var(--transition);border-left:2px solid transparent}
+
+/* Overlay dropdown */
+.menu-v .links{
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--bg);
+    border:1px solid var(--border);border-top:none;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    padding:4px 0;z-index:20;
+}
+.menu-v .link{display:flex;align-items:center;gap:8px;padding:8px 20px 8px 50px;color:var(--text2);text-decoration:none;font-size:13px;transition:all var(--transition);border-left:2px solid transparent}
 .menu-v .link:hover{color:var(--red);background:var(--bg-hover);border-left-color:var(--red)}
 .menu-v .link:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+/* Last section: dropdown goes upward if near bottom */
+.menu-v .section.drop-up .links{top:auto;bottom:100%;border:1px solid var(--border);border-bottom:none;box-shadow:0 -8px 24px rgba(0,0,0,.08)}
 
 /* ========================
    HORIZONTAL – Tabbar/Dropdown
    ======================== */
 .menu-h{width:100%;position:relative}
-
-/* Top bar with tabs */
 .menu-h .tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--bg)}
 .menu-h .section{flex:1;min-width:0;position:relative}
-
 .menu-h .sec-head{
     display:flex;align-items:center;justify-content:center;gap:8px;
     padding:14px 16px;font-size:12.5px;font-weight:600;color:var(--text2);
@@ -55,12 +66,9 @@ details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
 .menu-h .sec-head::-webkit-details-marker{display:none}
 .menu-h .sec-head:hover{color:var(--text);background:var(--bg-hover)}
 .menu-h details[open]>.sec-head{color:var(--red);border-bottom-color:var(--red);background:var(--bg)}
-
 .menu-h .sec-icon{font-size:16px;flex-shrink:0}
 .menu-h .sec-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .menu-h .chev{width:12px;height:12px}
-
-/* Dropdown panel */
 .menu-h .links{
     position:absolute;top:100%;left:0;right:0;
     background:var(--bg);
@@ -70,19 +78,16 @@ details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
     padding:8px 0;z-index:10;
     min-width:180px;
 }
-.menu-h .link{
-    display:block;padding:9px 20px;
-    color:var(--text2);text-decoration:none;font-size:13px;
-    transition:all var(--transition);
-}
+.menu-h .link{display:block;padding:9px 20px;color:var(--text2);text-decoration:none;font-size:13px;transition:all var(--transition)}
 .menu-h .link:hover{color:var(--text);background:var(--bg-hover)}
 .menu-h .link:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 
 /* ========================
    CARD VARIANT
    ======================== */
-body[data-variant="card"] .menu-v .section>details{margin:4px 12px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+body[data-variant="card"] .menu-v .section>details{margin:4px 12px;border:1px solid var(--border);border-radius:var(--radius);overflow:visible}
 body[data-variant="card"] .menu-v details[open]>.sec-head{border-bottom:1px solid var(--border)}
+body[data-variant="card"] .menu-v .links{left:12px;right:12px;border-radius:0 0 var(--radius) var(--radius)}
 body[data-variant="card"] .menu-v .link{padding-left:38px}
 
 body[data-variant="card"] .menu-h .section{margin:0 4px}
@@ -94,13 +99,13 @@ body[data-variant="card"] .menu-h details[open]>.sec-head{background:var(--bg-ho
    ======================== */
 body.dark{--bg:#1a1a2e;--bg-hover:rgba(255,255,255,.05);--bg-active:rgba(255,255,255,.08);--text:#f0f0f0;--text2:rgba(255,255,255,.65);--text3:rgba(255,255,255,.3);--border:rgba(255,255,255,.08)}
 body.dark .chev{filter:invert(.8)}
-body.dark .menu-h .links{box-shadow:0 8px 24px rgba(0,0,0,.3)}
+body.dark .menu-v .links,body.dark .menu-h .links{box-shadow:0 8px 24px rgba(0,0,0,.3)}
 
 /* ========================
    COMPACT
    ======================== */
 body.compact .menu-v .sec-head{padding:7px 16px;font-size:12.5px}
-body.compact .menu-v .link{padding:5px 16px 5px 42px;font-size:12px}
+body.compact .menu-v .link{padding:6px 16px 6px 42px;font-size:12px}
 body.compact .menu-h .sec-head{padding:10px 12px;font-size:11.5px}
 body.compact .menu-h .link{padding:7px 16px;font-size:12px}
 </style>
@@ -180,22 +185,37 @@ function render(){
     if(data.error){root.innerHTML=`<div style="padding:16px;color:#b00;font-size:13px">⚠ ${data.error}</div>`;return}
     root.innerHTML=(layout==='horizontal')?renderHorizontal(data):renderVertical(data);
 
-    // Horizontal: only one open at a time (like tabs)
-    if(layout==='horizontal'){
-        root.querySelectorAll('details').forEach(det=>{
-            det.addEventListener('toggle',()=>{
-                if(det.open){
-                    root.querySelectorAll('details').forEach(d=>{if(d!==det)d.open=false});
-                }
-            });
-        });
-        // Close on click outside
-        document.addEventListener('click',e=>{
-            if(!e.target.closest('.menu-h')){
-                root.querySelectorAll('details').forEach(d=>d.open=false);
+    // Both layouts: only one section open at a time
+    root.querySelectorAll('details').forEach(det=>{
+        det.addEventListener('toggle',()=>{
+            if(det.open){
+                root.querySelectorAll('details').forEach(d=>{if(d!==det)d.open=false});
             }
         });
+    });
+
+    // Close on click outside
+    document.addEventListener('click',e=>{
+        if(!e.target.closest('.menu-v') && !e.target.closest('.menu-h')){
+            root.querySelectorAll('details').forEach(d=>d.open=false);
+        }
+    });
+
+    // Vertical: detect sections near bottom → open upward
+    if(layout==='vertical'){
+        checkDropDirection();
+        root.querySelectorAll('details').forEach(det=>{
+            det.addEventListener('toggle',checkDropDirection);
+        });
     }
+}
+
+function checkDropDirection(){
+    const iframeH=window.innerHeight;
+    document.querySelectorAll('.menu-v .section').forEach(sec=>{
+        const rect=sec.getBoundingClientRect();
+        sec.classList.toggle('drop-up', iframeH-rect.bottom<120);
+    });
 }
 
 render();

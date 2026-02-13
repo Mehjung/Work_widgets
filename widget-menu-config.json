@@ -1,0 +1,39 @@
+{
+  "layout": "horizontal",
+  "open": "none",
+  "target": "_parent",
+  "menuData": {
+    "sections": [
+      {
+        "label": "Start",
+        "icon": " 🏠",
+        "links": [
+          {
+            "text": "Allgemeines",
+            "url": "https://db-planet.deutschebahn.com/pages/shared-service-center-azm-abrechungsteam-sued/apps/content/inhalt"
+          }
+        ]
+      },
+      {
+        "label": "ASES",
+        "icon": "🕒",
+        "links": [
+          {
+            "text": "Inhalt",
+            "url": "https://db-planet.deutschebahn.com/pages/shared-service-center-azm-abrechungsteam-sued/apps/content/inhalt-2"
+          }
+        ]
+      },
+      {
+        "label": "eTime",
+        "icon": "⌛",
+        "links": [
+          {
+            "text": "Inhalt",
+            "url": "https://db-planet.deutschebahn.com/pages/shared-service-center-azm-abrechungsteam-sued/apps/content/inhalt-3"
+          }
+        ]
+      }
+    ]
+  }
+}
