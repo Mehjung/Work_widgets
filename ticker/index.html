@@ -8,10 +8,11 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden;-webkit-font-smoothing:antialiased}
 .tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
-.tr{display:flex;white-space:nowrap}
-.tr.running{animation:sc var(--dur,30s) linear infinite}
+.tr{display:inline-flex;white-space:nowrap;will-change:transform}
+.tr.running{animation:sc var(--dur) linear infinite}
 .tr:hover{animation-play-state:paused}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(var(--scroll-dist))}}
+@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(var(--dist))}}
+.set{display:inline-flex;white-space:nowrap}
 .ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
 .ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
 .ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
@@ -41,27 +42,13 @@ if(P.get('theme')==='dark') document.body.classList.add('dark');
 const speed=parseInt(P.get('speed')||'30');
 const label=P.get('label')||'';
 
-/* UTF-8 safe Base64 */
 function b64decode(s){try{return decodeURIComponent(escape(atob(s)))}catch(e){return atob(s)}}
 
 function loadData(){
-    /* Method 1: base64 JSON */
     const b64=P.get('json');
-    if(b64){
-        try{
-            const data=JSON.parse(b64decode(b64));
-            return data.items||data;
-        }catch(e){return[]}
-    }
-    /* Method 2: compact URL */
+    if(b64){try{const d=JSON.parse(b64decode(b64));return d.items||d}catch(e){return[]}}
     const raw=P.get('items');
-    if(raw){
-        return raw.split(';;').map(r=>{
-            const[b,t]=r.includes('|')?r.split('|',2):['',r];
-            return{badge:b.trim().toLowerCase(),text:t.trim()};
-        }).filter(i=>i.text);
-    }
-    /* No data: show hint */
+    if(raw){return raw.split(';;').map(r=>{const[b,t]=r.includes('|')?r.split('|',2):['',r];return{badge:b.trim().toLowerCase(),text:t.trim()}}).filter(i=>i.text)}
     return[];
 }
 
@@ -70,23 +57,35 @@ const items=loadData();
 if(!items.length){
     document.getElementById('wr').innerHTML='<div class="empty">Keine Nachrichten konfiguriert</div>';
 }else{
-    function buildHtml(){
+    function itemsHtml(){
         return items.map(i=>{
             const bh=i.badge?`<span class="badge ${i.badge}">${i.badge}</span>`:'<span class="dot"></span>';
             return`<span class="ti">${bh} ${i.text}</span><span class="sep">◆</span>`;
         }).join('');
     }
+
     const tr=document.getElementById('tr');
-    // Render first half, measure, then duplicate
-    const oneSet=buildHtml();
-    tr.innerHTML=`<span id="half">${oneSet}</span><span>${oneSet}</span>`;
-    tr.style.setProperty('--dur',speed+'s');
-    // Wait for render, then measure exact width
-    requestAnimationFrame(()=>{
-        const halfW=document.getElementById('half').offsetWidth;
-        tr.style.setProperty('--scroll-dist', `-${halfW}px`);
-        tr.classList.add('running');
-    });
+    const html=itemsHtml();
+
+    // 1) Render one set to measure its width
+    tr.innerHTML=`<span class="set" id="measure">${html}</span>`;
+    const setWidth=document.getElementById('measure').getBoundingClientRect().width;
+
+    // 2) How many copies to fill at least 1 full viewport
+    const copies=Math.max(1, Math.ceil(window.innerWidth/setWidth));
+
+    // 3) Build one "half" that's guaranteed wider than viewport
+    let halfHtml='';
+    for(let i=0;i<copies;i++) halfHtml+=html;
+
+    // 4) Two identical halves: A B A B → scroll A away, B takes over seamlessly
+    tr.innerHTML=`<span class="set" id="halfA">${halfHtml}</span><span class="set">${halfHtml}</span>`;
+
+    // 5) Measure the exact half-width and set as scroll distance
+    const halfWidth=document.getElementById('halfA').getBoundingClientRect().width;
+    tr.style.setProperty('--dist', `-${halfWidth}px`);
+    tr.style.setProperty('--dur', `${speed}s`);
+    tr.classList.add('running');
 }
 
 if(label){
