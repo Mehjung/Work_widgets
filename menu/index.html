@@ -12,7 +12,7 @@
     --radius:8px;--radius-sm:6px;--transition:150ms ease;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow:hidden}
+body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
 
 /* === CHEVRON === */
 .chev{width:16px;height:16px;flex-shrink:0;transition:transform 200ms cubic-bezier(.4,0,.2,1);opacity:.4}
@@ -24,9 +24,9 @@ details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
    ======================== */
 .menu-v{width:100%;padding:8px 0}
 .menu-v .menu-title{padding:10px 20px 6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3)}
-.menu-v .section{position:relative}
+.menu-v .section{}
 .menu-v .section+.section{margin-top:2px}
-.menu-v .sec-head{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;user-select:none;transition:background var(--transition);position:relative;z-index:2}
+.menu-v .sec-head{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;user-select:none;transition:background var(--transition)}
 .menu-v .sec-head::-webkit-details-marker{display:none}
 .menu-v .sec-head:hover{background:var(--bg-hover)}
 .menu-v .sec-head:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
@@ -36,18 +36,11 @@ details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
 
 /* Overlay dropdown */
 .menu-v .links{
-    position:absolute;top:100%;left:0;right:0;
-    background:var(--bg);
-    border:1px solid var(--border);border-top:none;
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
-    padding:4px 0;z-index:20;
+    padding:2px 0 6px;
 }
 .menu-v .link{display:flex;align-items:center;gap:8px;padding:8px 20px 8px 50px;color:var(--text2);text-decoration:none;font-size:13px;transition:all var(--transition);border-left:2px solid transparent}
 .menu-v .link:hover{color:var(--red);background:var(--bg-hover);border-left-color:var(--red)}
 .menu-v .link:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
-
-/* Last section: dropdown goes upward if near bottom */
-.menu-v .section.drop-up .links{top:auto;bottom:100%;border:1px solid var(--border);border-bottom:none;box-shadow:0 -8px 24px rgba(0,0,0,.08)}
 
 /* ========================
    HORIZONTAL – Tabbar/Dropdown
@@ -85,9 +78,8 @@ details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
 /* ========================
    CARD VARIANT
    ======================== */
-body[data-variant="card"] .menu-v .section>details{margin:4px 12px;border:1px solid var(--border);border-radius:var(--radius);overflow:visible}
+body[data-variant="card"] .menu-v .section>details{margin:4px 12px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
 body[data-variant="card"] .menu-v details[open]>.sec-head{border-bottom:1px solid var(--border)}
-body[data-variant="card"] .menu-v .links{left:12px;right:12px;border-radius:0 0 var(--radius) var(--radius)}
 body[data-variant="card"] .menu-v .link{padding-left:38px}
 
 body[data-variant="card"] .menu-h .section{margin:0 4px}
@@ -185,37 +177,21 @@ function render(){
     if(data.error){root.innerHTML=`<div style="padding:16px;color:#b00;font-size:13px">⚠ ${data.error}</div>`;return}
     root.innerHTML=(layout==='horizontal')?renderHorizontal(data):renderVertical(data);
 
-    // Both layouts: only one section open at a time
-    root.querySelectorAll('details').forEach(det=>{
-        det.addEventListener('toggle',()=>{
-            if(det.open){
-                root.querySelectorAll('details').forEach(d=>{if(d!==det)d.open=false});
+    // Horizontal: only one open at a time
+    if(layout==='horizontal'){
+        root.querySelectorAll('details').forEach(det=>{
+            det.addEventListener('toggle',()=>{
+                if(det.open){
+                    root.querySelectorAll('details').forEach(d=>{if(d!==det)d.open=false});
+                }
+            });
+        });
+        document.addEventListener('click',e=>{
+            if(!e.target.closest('.menu-h')){
+                root.querySelectorAll('details').forEach(d=>d.open=false);
             }
         });
-    });
-
-    // Close on click outside
-    document.addEventListener('click',e=>{
-        if(!e.target.closest('.menu-v') && !e.target.closest('.menu-h')){
-            root.querySelectorAll('details').forEach(d=>d.open=false);
-        }
-    });
-
-    // Vertical: detect sections near bottom → open upward
-    if(layout==='vertical'){
-        checkDropDirection();
-        root.querySelectorAll('details').forEach(det=>{
-            det.addEventListener('toggle',checkDropDirection);
-        });
     }
-}
-
-function checkDropDirection(){
-    const iframeH=window.innerHeight;
-    document.querySelectorAll('.menu-v .section').forEach(sec=>{
-        const rect=sec.getBoundingClientRect();
-        sec.classList.toggle('drop-up', iframeH-rect.bottom<120);
-    });
 }
 
 render();
