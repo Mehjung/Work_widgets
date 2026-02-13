@@ -18,6 +18,7 @@ Gehostet auf GitHub Pages, konfigurierbar über URL-Parameter.
 | 📊 KPI | `/kpi/` | Kennzahl als Ring oder Balken |
 | 📢 Ticker | `/ticker/` | Scrollendes Nachrichten-Laufband |
 | 👥 Teamstatus | `/team-status/` | Verfügbarkeitsübersicht |
+| 📂 Menü | `/menu/` | Accordion-Menü mit Rubriken und Links |
 
 ## 🔧 Einbettung
 
@@ -55,7 +56,29 @@ db-widgets/
 ├── quote/index.html
 ├── kpi/index.html
 ├── ticker/index.html
-└── team-status/index.html
+├── team-status/index.html
+└── menu/
+    ├── index.html       ← Menü-Widget
+    └── menu-data.json   ← Beispiel JSON-Konfiguration
+```
+
+## 📂 Menü-Widget: 3 Wege zur Konfiguration
+
+### Weg 1: Kompakte URL-Parameter (kurze Menüs)
+```
+/menu/?items=Zeitwirtschaft::ZEF|https://zef.db.de|neu,,EAU|https://eau.db.de;;Entgelt::SAP|https://sap.db.de
+```
+Format: `Rubrik::Text|URL|Badge,,Text|URL;;NächsteRubrik::...`
+
+### Weg 2: JSON-Datei (empfohlen für große Menüs)
+```
+/menu/?config=menu-data.json
+```
+Lege eine `menu-data.json` neben das Widget (siehe Beispiel im Ordner).
+
+### Weg 3: Base64-kodiertes JSON im URL
+```
+/menu/?json=eyJzZWN0aW9ucyI6Wy4uLl19
 ```
 
 ## 🌐 GitHub Pages einrichten

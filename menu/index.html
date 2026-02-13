@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menü Widget</title>
+<style>
+:root{
+    --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+    --red:#ec0016;--bg:#fff;--bg-hover:#f6f7f9;--bg-active:#eef0f3;
+    --text:#1b1f24;--text2:#4b5563;--text3:#9ca3af;--border:#e5e7eb;--focus:#3b82f6;
+    --radius:8px;--radius-sm:6px;--transition:150ms ease;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);font-size:14px;line-height:1.5;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+
+/* === CHEVRON SVG === */
+.chev{width:16px;height:16px;flex-shrink:0;transition:transform 200ms cubic-bezier(.4,0,.2,1);opacity:.4}
+details[open]>.sec-head .chev{transform:rotate(90deg);opacity:.6}
+
+/* ========================
+   VERTICAL – Sidebar
+   ======================== */
+.menu-v{width:100%;padding:8px 0}
+.menu-v .menu-title{padding:10px 20px 6px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3)}
+.menu-v .section+.section{margin-top:2px}
+.menu-v .sec-head{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;list-style:none;user-select:none;transition:background var(--transition)}
+.menu-v .sec-head::-webkit-details-marker{display:none}
+.menu-v .sec-head:hover{background:var(--bg-hover)}
+.menu-v .sec-head:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.menu-v .sec-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.menu-v .sec-label{flex:1}
+.menu-v .links{padding:2px 0 6px}
+.menu-v .link{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 50px;color:var(--text2);text-decoration:none;font-size:13px;transition:all var(--transition);border-left:2px solid transparent}
+.menu-v .link:hover{color:var(--red);background:var(--bg-hover);border-left-color:var(--red)}
+.menu-v .link:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+/* ========================
+   HORIZONTAL – Tabbar/Dropdown
+   ======================== */
+.menu-h{width:100%;position:relative}
+
+/* Top bar with tabs */
+.menu-h .tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--bg)}
+.menu-h .section{flex:1;min-width:0;position:relative}
+
+.menu-h .sec-head{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 16px;font-size:12.5px;font-weight:600;color:var(--text2);
+    cursor:pointer;list-style:none;user-select:none;
+    transition:all var(--transition);
+    border-bottom:2px solid transparent;
+    text-align:center;width:100%;
+}
+.menu-h .sec-head::-webkit-details-marker{display:none}
+.menu-h .sec-head:hover{color:var(--text);background:var(--bg-hover)}
+.menu-h details[open]>.sec-head{color:var(--red);border-bottom-color:var(--red);background:var(--bg)}
+
+.menu-h .sec-icon{font-size:16px;flex-shrink:0}
+.menu-h .sec-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu-h .chev{width:12px;height:12px}
+
+/* Dropdown panel */
+.menu-h .links{
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--bg);
+    border:1px solid var(--border);border-top:none;
+    border-radius:0 0 var(--radius) var(--radius);
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    padding:8px 0;z-index:10;
+    min-width:180px;
+}
+.menu-h .link{
+    display:block;padding:9px 20px;
+    color:var(--text2);text-decoration:none;font-size:13px;
+    transition:all var(--transition);
+}
+.menu-h .link:hover{color:var(--text);background:var(--bg-hover)}
+.menu-h .link:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+
+/* ========================
+   CARD VARIANT
+   ======================== */
+body[data-variant="card"] .menu-v .section>details{margin:4px 12px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+body[data-variant="card"] .menu-v details[open]>.sec-head{border-bottom:1px solid var(--border)}
+body[data-variant="card"] .menu-v .link{padding-left:38px}
+
+body[data-variant="card"] .menu-h .section{margin:0 4px}
+body[data-variant="card"] .menu-h .sec-head{border-radius:var(--radius) var(--radius) 0 0}
+body[data-variant="card"] .menu-h details[open]>.sec-head{background:var(--bg-hover)}
+
+/* ========================
+   DARK THEME
+   ======================== */
+body.dark{--bg:#1a1a2e;--bg-hover:rgba(255,255,255,.05);--bg-active:rgba(255,255,255,.08);--text:#f0f0f0;--text2:rgba(255,255,255,.65);--text3:rgba(255,255,255,.3);--border:rgba(255,255,255,.08)}
+body.dark .chev{filter:invert(.8)}
+body.dark .menu-h .links{box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+/* ========================
+   COMPACT
+   ======================== */
+body.compact .menu-v .sec-head{padding:7px 16px;font-size:12.5px}
+body.compact .menu-v .link{padding:5px 16px 5px 42px;font-size:12px}
+body.compact .menu-h .sec-head{padding:10px 12px;font-size:11.5px}
+body.compact .menu-h .link{padding:7px 16px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const P=new URLSearchParams(location.search);
+if(P.get('theme')==='dark') document.body.classList.add('dark');
+if(P.get('compact')==='true') document.body.classList.add('compact');
+if(P.get('variant')) document.body.setAttribute('data-variant',P.get('variant'));
+const layout=P.get('layout')||'vertical';
+const dfltTarget=P.get('target')||'_blank';
+const openMode=P.get('open')||'first';
+
+function b64decode(s){try{return decodeURIComponent(escape(atob(s)))}catch(e){return atob(s)}}
+
+function loadData(){
+    const items=P.get('items');
+    if(items)return parseCompact(items);
+    const b64=P.get('json');
+    if(b64){try{return JSON.parse(b64decode(b64))}catch(e){return{error:'Ungültiges Base64-JSON: '+e.message}}}
+    return getDemoData();
+}
+function parseCompact(str){
+    const icons=(P.get('icons')||'').split(',');
+    return{title:P.get('title')||'',sections:str.split(';;').map((s,i)=>{
+        const[label,lStr]=s.split('::');
+        const links=(lStr||'').split(',,').map(l=>{const p=l.split('|');return{text:p[0]||'',url:p[1]||'#'}}).filter(l=>l.text);
+        return{label:label.trim(),icon:icons[i]||'',links}
+    }).filter(s=>s.label)};
+}
+function getDemoData(){
+    return{title:'Schnellzugriff',sections:[
+        {label:'Zeitwirtschaft',icon:'🕐',links:[{text:'ZEF 4.0',url:'#'},{text:'EAU Übersicht',url:'#'},{text:'CATS Erfassung',url:'#'},{text:'Schichtplanung',url:'#'}]},
+        {label:'Entgeltabrechnung',icon:'💰',links:[{text:'SAP HCM',url:'#'},{text:'P40 Auswertungen',url:'#'},{text:'Entgeltnachweis',url:'#'},{text:'SV-Meldungen',url:'#'}]},
+        {label:'Formulare',icon:'📋',links:[{text:'Reisekostenantrag',url:'#'},{text:'Urlaubsantrag',url:'#'},{text:'Bescheinigungen',url:'#'}]},
+        {label:'Kontakt & Hilfe',icon:'📞',links:[{text:'SSC Hotline',url:'#'},{text:'IT-Support',url:'#'},{text:'FAQ',url:'#'}]}
+    ]};
+}
+
+const chevSVG=`<svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function isOpen(sec,idx){
+    if(openMode==='all') return true;
+    if(openMode==='none') return false;
+    if(openMode==='first' && idx===0) return true;
+    return !!sec.open;
+}
+
+function renderVertical(data){
+    let h='<nav class="menu-v" role="navigation">';
+    if(data.title) h+=`<div class="menu-title">${data.title}</div>`;
+    data.sections.forEach((sec,i)=>{
+        const icon=sec.icon?`<span class="sec-icon">${sec.icon}</span>`:'';
+        h+=`<div class="section"><details${isOpen(sec,i)?' open':''}><summary class="sec-head">${icon}<span class="sec-label">${sec.label}</span>${chevSVG}</summary><div class="links">`;
+        sec.links.forEach(l=>h+=`<a class="link" href="${l.url}" target="${dfltTarget}" rel="noopener">${l.text}</a>`);
+        h+=`</div></details></div>`;
+    });
+    return h+'</nav>';
+}
+
+function renderHorizontal(data){
+    let h='<nav class="menu-h" role="navigation"><div class="tab-bar">';
+    data.sections.forEach((sec,i)=>{
+        const icon=sec.icon?`<span class="sec-icon">${sec.icon}</span>`:'';
+        h+=`<div class="section"><details${isOpen(sec,i)?' open':''}><summary class="sec-head">${icon}<span class="sec-label">${sec.label}</span>${chevSVG}</summary><div class="links">`;
+        sec.links.forEach(l=>h+=`<a class="link" href="${l.url}" target="${dfltTarget}" rel="noopener">${l.text}</a>`);
+        h+=`</div></details></div>`;
+    });
+    return h+'</div></nav>';
+}
+
+function render(){
+    const data=loadData();
+    const root=document.getElementById('root');
+    if(data.error){root.innerHTML=`<div style="padding:16px;color:#b00;font-size:13px">⚠ ${data.error}</div>`;return}
+    root.innerHTML=(layout==='horizontal')?renderHorizontal(data):renderVertical(data);
+
+    // Horizontal: only one open at a time (like tabs)
+    if(layout==='horizontal'){
+        root.querySelectorAll('details').forEach(det=>{
+            det.addEventListener('toggle',()=>{
+                if(det.open){
+                    root.querySelectorAll('details').forEach(d=>{if(d!==det)d.open=false});
+                }
+            });
+        });
+        // Close on click outside
+        document.addEventListener('click',e=>{
+            if(!e.target.closest('.menu-h')){
+                root.querySelectorAll('details').forEach(d=>d.open=false);
+            }
+        });
+    }
+}
+
+render();
+</script>
+</body>
+</html>

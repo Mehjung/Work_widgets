@@ -5,441 +5,378 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DB Widget Hub – SSC AZM</title>
 <style>
-:root{--bg:#f5f5f7;--card:#fff;--text:#1a1a2e;--text2:#666;--text3:#aaa;--border:#e5e5e5;--red:#ec0016;--red-light:rgba(236,0,22,.08);--blue:#0ea5e9;--green:#16a34a;--shadow:0 2px 12px rgba(0,0,0,.06)}
+:root{--bg:#f5f5f7;--card:#fff;--text:#1a1a2e;--text2:#666;--text3:#aaa;--border:#e5e5e5;--red:#ec0016;--red-light:rgba(236,0,22,.08);--blue:#0ea5e9}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
-
-/* HEADER */
 .header{background:var(--text);padding:0 32px;display:flex;align-items:center;height:56px;gap:16px;position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px}
 .logo-box{width:36px;height:24px;border:2px solid rgba(255,255,255,.6);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:rgba(255,255,255,.8)}
 .header h1{font-size:15px;font-weight:600;color:#fff;flex:1}
 .header-badge{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;background:var(--red);color:#fff;text-transform:uppercase;letter-spacing:.5px}
-
-/* NAV */
 .nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 32px;display:flex;gap:4px;position:sticky;top:56px;z-index:99}
 .nav-item{padding:14px 16px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .nav-item:hover{color:var(--text)}
 .nav-item.active{color:var(--red);border-bottom-color:var(--red);font-weight:600}
-
-/* MAIN */
 .main{max-width:1100px;margin:0 auto;padding:32px}
-.section-title{font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.5px}
+.section-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
 .section-sub{font-size:14px;color:var(--text3);margin-bottom:28px}
-
-/* WIDGET CARDS */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-bottom:40px}
 .card{background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:pointer}
 .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px)}
-.card-preview{height:200px;background:#fafafa;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
-.card-preview iframe{width:100%;height:100%;border:none}
+.card-preview{height:200px;background:#fafafa;border-bottom:1px solid var(--border);overflow:hidden}
+.card-preview iframe{width:100%;height:100%;border:none;pointer-events:none}
 .card-body{padding:16px}
 .card-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .card-tag.live{background:rgba(22,163,74,.1);color:#16a34a}
 .card-tag.info{background:rgba(14,165,233,.1);color:#0ea5e9}
-.card-tag.data{background:rgba(139,92,246,.1);color:#8b5cf6}
-.card-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-title{font-size:16px;font-weight:700;margin-bottom:4px}
 .card-desc{font-size:12px;color:var(--text3);line-height:1.6}
-
-/* DETAIL PANEL (Overlay) */
-.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;backdrop-filter:blur(4px)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;backdrop-filter:blur(4px)}
 .overlay.open{display:flex;justify-content:center;align-items:flex-start;padding:40px 20px}
-.panel{background:var(--card);border-radius:16px;width:100%;max-width:860px;max-height:calc(100vh - 80px);overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.15)}
+.panel{background:var(--card);border-radius:16px;width:100%;max-width:920px;max-height:calc(100vh - 80px);overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.15)}
 .panel-head{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .panel-head h2{font-size:20px;font-weight:700}
 .panel-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text2)}
 .panel-close:hover{background:#f5f5f5}
 .panel-body{padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
 .panel-preview{border-radius:10px;border:1px solid var(--border);overflow:hidden;background:#fafafa;min-height:260px}
-.panel-preview iframe{width:100%;height:280px;border:none}
-.panel-config h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.panel-preview iframe{width:100%;height:300px;border:none}
+.panel-config{max-height:500px;overflow-y:auto;padding-right:4px}
+.panel-config h3{font-size:13px;font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
 .field input,.field select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--card);color:var(--text)}
 .field input:focus,.field select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-light)}
-.field-row{display:flex;gap:10px}
-.field-row .field{flex:1}
 .panel-footer{padding:20px 28px;border-top:1px solid var(--border);background:#fafafa;border-radius:0 0 16px 16px}
 .embed-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.embed-code{font-family:'Cascadia Code','Fira Code',monospace;font-size:12px;background:var(--text);color:#a5f3fc;padding:14px 16px;border-radius:8px;white-space:pre-wrap;word-break:break-all;position:relative;line-height:1.6}
-.btn-row{display:flex;gap:8px;margin-top:12px}
+.embed-code{font-family:'Cascadia Code','Fira Code',monospace;font-size:11px;background:var(--text);color:#a5f3fc;padding:14px 16px;border-radius:8px;white-space:pre-wrap;word-break:break-all;line-height:1.6;max-height:120px;overflow-y:auto}
 .btn{padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
 .btn-primary{background:var(--red);color:#fff}.btn-primary:hover{background:#c40014}
 .btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}.btn-secondary:hover{background:#f5f5f5}
 .btn-sm{padding:5px 12px;font-size:11px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.url-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8f8f8;border-radius:8px;margin-top:12px;border:1px solid var(--border)}
+.url-bar code{flex:1;font-family:'Cascadia Code','Fira Code',monospace;font-size:10px;color:var(--red);word-break:break-all}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:500;transition:transform .3s ease;z-index:999;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .toast.show{transform:translateX(-50%) translateY(0)}
-
-/* URL DISPLAY */
-.url-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f8f8f8;border-radius:8px;margin-bottom:16px;border:1px solid var(--border)}
-.url-bar code{flex:1;font-family:'Cascadia Code','Fira Code',monospace;font-size:12px;color:var(--red);word-break:break-all}
-.url-bar .btn-sm{flex-shrink:0}
-
-/* INFO SECTION */
 .info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
 .info-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
 .info-card .icon{font-size:28px;margin-bottom:10px}
 .info-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
 .info-card p{font-size:12px;color:var(--text3);line-height:1.6}
-
-/* TABS */
 .tabs{display:none}.tabs.active{display:block}
-
-/* RESPONSIVE */
+.hint{font-size:11px;color:var(--text3);margin-top:6px;font-style:italic}
+.menu-editor{background:#fafafa;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px}
+.me-section{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden}
+.me-section-head{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#f8f9fa;border-bottom:1px solid var(--border)}
+.me-section-head input{padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;font-family:inherit}
+.me-section-head input.icon-input{width:44px;flex:none;text-align:center;font-size:16px}
+.me-section-head input.name-input{flex:1}
+.me-section-head .btn{padding:3px 8px;font-size:10px}
+.me-links{padding:6px 10px 6px 20px}
+.me-link{display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.me-link input{padding:4px 8px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:inherit}
+.me-link input.link-text{flex:2;min-width:0}
+.me-link input.link-url{flex:3;min-width:0;font-family:monospace;font-size:10px}
+.me-link .btn{padding:2px 6px;font-size:10px;line-height:1;flex-shrink:0}
+.me-add-link{font-size:11px;color:var(--blue);cursor:pointer;padding:2px 0;display:inline-block}
+.me-add-link:hover{text-decoration:underline}
+.me-toolbar{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 @media(max-width:768px){.panel-body{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
 <div class="header">
-    <div class="logo">
-        <div class="logo-box">DB</div>
-    </div>
+    <div class="logo-box">DB</div>
     <h1>Widget Hub · SSC AZM Abrechnungsteam Süd</h1>
     <div class="header-badge">7 Widgets</div>
 </div>
-
-<!-- NAV -->
 <div class="nav">
-    <div class="nav-item active" onclick="showTab('widgets')">🧩 Widgets</div>
-    <div class="nav-item" onclick="showTab('howto')">📖 Anleitung</div>
-    <div class="nav-item" onclick="showTab('examples')">💡 Beispiele</div>
+    <div class="nav-item active" onclick="showTab('widgets',this)">🧩 Widgets</div>
+    <div class="nav-item" onclick="showTab('howto',this)">📖 Anleitung</div>
+    <div class="nav-item" onclick="showTab('examples',this)">💡 Beispiele</div>
 </div>
-
-<!-- MAIN -->
 <div class="main">
-
-<!-- TAB: WIDGETS -->
 <div class="tabs active" id="tab-widgets">
     <div class="section-title">Verfügbare Widgets</div>
     <div class="section-sub">Klicke auf ein Widget zum Konfigurieren und Einbetten</div>
     <div class="grid" id="widgetGrid"></div>
 </div>
-
-<!-- TAB: HOWTO -->
 <div class="tabs" id="tab-howto">
     <div class="section-title">Anleitung</div>
     <div class="section-sub">So bindest du Widgets in die Intranet-Seite ein</div>
-
     <div class="info-grid">
-        <div class="info-card">
-            <div class="icon">1️⃣</div>
-            <h3>Widget auswählen</h3>
-            <p>Wähle im Widget-Tab das gewünschte Widget aus und konfiguriere die Parameter über die Eingabefelder.</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">2️⃣</div>
-            <h3>Embed-Code kopieren</h3>
-            <p>Klicke auf „Code kopieren" um den iframe-Code in die Zwischenablage zu kopieren.</p>
-        </div>
-        <div class="info-card">
-            <div class="icon">3️⃣</div>
-            <h3>Im Intranet einfügen</h3>
-            <p>Füge den Code in euer Intranet-HTML-Widget ein. Die Live-Vorschau zeigt dir, wie es aussehen wird.</p>
-        </div>
+        <div class="info-card"><div class="icon">1️⃣</div><h3>Widget auswählen</h3><p>Wähle im Widget-Tab das gewünschte Widget und konfiguriere es.</p></div>
+        <div class="info-card"><div class="icon">2️⃣</div><h3>Embed-Code kopieren</h3><p>Vorschau aktualisiert sich live. Kopiere den Embed-Code.</p></div>
+        <div class="info-card"><div class="icon">3️⃣</div><h3>Im Intranet einfügen</h3><p>Füge den iframe-Code in euer Intranet-HTML-Widget ein.</p></div>
     </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">⚙️ URL-Parameter</h3>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8">Jedes Widget wird über URL-Parameter konfiguriert. Du kannst diese direkt in der URL ändern, ohne Code anzufassen. Alle Parameter sind optional und haben sinnvolle Standardwerte.</p>
-        <div style="margin-top:14px;padding:14px;background:#f8f8f8;border-radius:8px;font-family:monospace;font-size:12px;color:var(--red)">
-            https://DEIN-USERNAME.github.io/db-widgets/clock/?theme=dark&amp;mode=digital
-        </div>
-    </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">🛡️ Klick-Blockade</h3>
-        <p style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:12px">Um zu verhindern, dass Nutzer durch Klicks im iframe weitergeleitet werden, verwende ein transparentes Overlay:</p>
-        <div class="embed-code">&lt;div style="position:relative"&gt;
-  &lt;iframe src="..." width="100%" height="250" frameborder="0"&gt;&lt;/iframe&gt;
-  &lt;div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:10"&gt;&lt;/div&gt;
-&lt;/div&gt;</div>
-    </div>
-
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">🔤 Sonderzeichen in URLs</h3>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
-            <div style="padding:8px;background:#f8f8f8;border-radius:6px;text-align:center;font-size:12px"><strong>%</strong> → %25</div>
-            <div style="padding:8px;background:#f8f8f8;border-radius:6px;text-align:center;font-size:12px"><strong>#</strong> → %23</div>
-            <div style="padding:8px;background:#f8f8f8;border-radius:6px;text-align:center;font-size:12px"><strong>&amp;</strong> → %26</div>
-            <div style="padding:8px;background:#f8f8f8;border-radius:6px;text-align:center;font-size:12px"><strong>Leer</strong> → %20</div>
-        </div>
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:12px">📂 Menü: Datenformat</h3>
+        <p style="font-size:13px;color:var(--text2);line-height:1.8">Menüdaten werden als Base64-kodiertes JSON im URL übertragen. Der Konfigurator erstellt den Code automatisch. Konfigurationen lassen sich als JSON-Datei exportieren und importieren.</p>
     </div>
 </div>
-
-<!-- TAB: EXAMPLES -->
 <div class="tabs" id="tab-examples">
     <div class="section-title">Beispiel-Layouts</div>
     <div class="section-sub">Fertige Kombinationen für eure Intranet-Seiten</div>
-
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📊 KPI-Dashboard (3 Kacheln)</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:200px"><iframe src="kpi/?value=847&target=900&unit=Fälle&title=Bearbeitete Fälle&trend=%2B12%25&color=%23ec0016" width="100%" height="200" frameborder="0"></iframe></div>
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:200px"><iframe src="kpi/?value=2.1&target=3&unit=Tage&title=Ø Bearbeitungszeit&color=%230ea5e9&trend=-0.3" width="100%" height="200" frameborder="0"></iframe></div>
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:200px"><iframe src="kpi/?value=99.2&target=100&unit=%25&title=Qualitätsquote&color=%2316a34a&trend=%2B0.4%25" width="100%" height="200" frameborder="0"></iframe></div>
-        </div>
-        <div class="embed-code" style="font-size:11px">&lt;div style="display:flex;gap:12px"&gt;
-  &lt;iframe src="kpi/?value=847&amp;target=900&amp;unit=Fälle&amp;title=Bearbeitete Fälle&amp;trend=%2B12%25" style="flex:1" height="200" frameborder="0"&gt;&lt;/iframe&gt;
-  &lt;iframe src="kpi/?value=2.1&amp;target=3&amp;unit=Tage&amp;title=Ø Bearbeitungszeit&amp;color=%230ea5e9" style="flex:1" height="200" frameborder="0"&gt;&lt;/iframe&gt;
-  &lt;iframe src="kpi/?value=99.2&amp;target=100&amp;unit=%25&amp;title=Qualitätsquote&amp;color=%2316a34a" style="flex:1" height="200" frameborder="0"&gt;&lt;/iframe&gt;
-&lt;/div&gt;</div>
-    </div>
-
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">🕐 Uhr + Kalender + Zitat</h3>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:12px;margin-bottom:16px">
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:280px"><iframe src="clock/?mode=both" width="100%" height="280" frameborder="0"></iframe></div>
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:280px"><iframe src="calendar/?kw=true&marked=12,14,28" width="100%" height="280" frameborder="0"></iframe></div>
-            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:280px;display:flex;align-items:center"><iframe src="quote/?category=teamwork" width="100%" height="200" frameborder="0"></iframe></div>
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📂 Menü – Horizontal (breites Layout)</h3>
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:220px;margin-bottom:16px;background:#fafafa">
+            <iframe src="menu/?layout=horizontal&open=first" width="100%" height="220" frameborder="0"></iframe>
         </div>
     </div>
-
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📂 Menü – Sidebar + Widgets</h3>
+        <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;margin-bottom:16px">
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:300px"><iframe src="menu/?compact=true" width="100%" height="300" frameborder="0"></iframe></div>
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:300px;display:flex;flex-direction:column">
+                <div style="flex:1;border-bottom:1px solid var(--border)"><iframe src="clock/?mode=both" width="100%" height="250" frameborder="0"></iframe></div>
+                <div style="height:48px"><iframe src="ticker/?label=Aktuell&speed=25&json=eyJpdGVtcyI6W3siYmFkZ2UiOiJ3aWNodGlnIiwidGV4dCI6IkVudGdlbHRhYnNjaGx1c3MgRmVicnVhciJ9LHsiYmFkZ2UiOiJpbmZvIiwidGV4dCI6IlpFRiA0LjAgVXBkYXRlIGFiIEtXIDgifV19" width="100%" height="48" frameborder="0"></iframe></div>
+            </div>
+        </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📅 Kalender + Uhr + Zitat</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:12px">
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:340px"><iframe src="calendar/?bl=SL" width="100%" height="340" frameborder="0"></iframe></div>
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:340px"><iframe src="clock/?mode=both" width="100%" height="340" frameborder="0"></iframe></div>
+            <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:340px"><iframe src="quote/?category=teamwork" width="100%" height="340" frameborder="0"></iframe></div>
+        </div>
+    </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
-        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📢 Ticker + Countdown</h3>
-        <div style="margin-bottom:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;height:48px"><iframe src="ticker/?label=Aktuell&speed=25" width="100%" height="48" frameborder="0"></iframe></div>
-        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:180px"><iframe src="countdown/?target=2026-02-28T23:59:00&title=Entgeltabschluss Februar&start=2026-02-01T00:00:00&compact=true" width="100%" height="180" frameborder="0"></iframe></div>
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">💰 Entgeltabschluss + Ticker</h3>
+        <div style="margin-bottom:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;height:160px"><iframe src="payroll/?title=Entgeltabschluss" width="100%" height="160" frameborder="0"></iframe></div>
+        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;height:48px"><iframe src="ticker/?label=Aktuell&speed=25&json=eyJpdGVtcyI6W3siYmFkZ2UiOiJ3aWNodGlnIiwidGV4dCI6IkVudGdlbHRhYnNjaGx1c3MgRmVicnVhciJ9LHsiYmFkZ2UiOiJpbmZvIiwidGV4dCI6IlpFRiA0LjAgVXBkYXRlIGFiIEtXIDgifV19" width="100%" height="48" frameborder="0"></iframe></div>
     </div>
 </div>
-
-</div><!-- /main -->
-
-<!-- DETAIL OVERLAY -->
-<div class="overlay" id="overlay" onclick="if(event.target===this)closePanel()">
-    <div class="panel" id="panel"></div>
 </div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">✅ Code kopiert!</div>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closePanel()"><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept=".json" style="display:none">
 
 <script>
-// === WIDGET DEFINITIONS ===
-const BASE = location.pathname.replace(/\/$/,'') + '/';
-const widgets = [
-    {
-        id:'clock', icon:'🕐', title:'Uhr', tag:'live', tagLabel:'Live',
-        desc:'Analoge + digitale Uhr mit Datum und Zeitzone.',
-        height:250,
-        params:[
-            {key:'mode',label:'Modus',type:'select',options:[['both','Analog + Digital'],['analog','Nur Analog'],['digital','Nur Digital']],default:'both'},
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'tz',label:'Zeitzone',type:'text',default:'Europe/Berlin',placeholder:'z.B. America/New_York'},
-            {key:'label',label:'Beschriftung',type:'text',default:'',placeholder:'z.B. Mitteleuropäische Zeit'},
-        ]
-    },
-    {
-        id:'countdown', icon:'⏳', title:'Countdown', tag:'live', tagLabel:'Live',
-        desc:'Timer bis zu einem Zieldatum mit optionalem Fortschrittsbalken.',
-        height:200,
-        params:[
-            {key:'title',label:'Titel',type:'text',default:'Countdown',placeholder:'z.B. Entgeltabschluss'},
-            {key:'target',label:'Zieldatum',type:'datetime-local',default:'2026-02-28T23:59'},
-            {key:'start',label:'Startdatum (für Balken)',type:'datetime-local',default:''},
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'compact',label:'Kompakt',type:'select',options:[['false','Normal'],['true','Kompakt']],default:'false'},
-            {key:'done',label:'Fertig-Nachricht',type:'text',default:'✅ Frist erreicht!',placeholder:'Nachricht wenn abgelaufen'},
-        ]
-    },
-    {
-        id:'calendar', icon:'📅', title:'Kalender', tag:'live', tagLabel:'Live',
-        desc:'Interaktiver Monatskalender mit KW-Anzeige und markierten Tagen.',
-        height:320,
-        params:[
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'kw',label:'Kalenderwochen',type:'select',options:[['false','Ausblenden'],['true','Anzeigen']],default:'false'},
-            {key:'marked',label:'Markierte Tage',type:'text',default:'',placeholder:'z.B. 5,14,28 (blauer Punkt)'},
-            {key:'holidays',label:'Feiertage/Hervorhebung',type:'text',default:'',placeholder:'z.B. 1,25 (roter Hintergrund)'},
-        ]
-    },
-    {
-        id:'quote', icon:'💬', title:'Zitat des Tages', tag:'info', tagLabel:'Content',
-        desc:'Wechselndes Motivationszitat, tägliche oder stündliche Rotation.',
-        height:200,
-        params:[
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'category',label:'Kategorie',type:'select',options:[['all','Alle'],['motivation','Motivation'],['teamwork','Teamwork'],['quality','Qualität']],default:'all'},
-            {key:'rotate',label:'Rotation',type:'select',options:[['daily','Täglich'],['hourly','Stündlich'],['random','Zufällig']],default:'daily'},
-        ]
-    },
-    {
-        id:'kpi', icon:'📊', title:'KPI-Kennzahl', tag:'data', tagLabel:'Daten',
-        desc:'Einzelne Kennzahl als Ring-Diagramm oder Balken mit Trend-Indikator.',
-        height:220,
-        params:[
-            {key:'title',label:'Titel',type:'text',default:'KPI',placeholder:'z.B. Bearbeitete Fälle'},
-            {key:'value',label:'Aktueller Wert',type:'text',default:'75',placeholder:'z.B. 847'},
-            {key:'target',label:'Zielwert (=100%)',type:'text',default:'100',placeholder:'z.B. 900'},
-            {key:'unit',label:'Einheit',type:'text',default:'',placeholder:'z.B. %, Tage, Fälle'},
-            {key:'mode',label:'Darstellung',type:'select',options:[['ring','Ring-Diagramm'],['bar','Fortschrittsbalken']],default:'ring'},
-            {key:'trend',label:'Trend',type:'text',default:'',placeholder:'z.B. +12% oder -0.3'},
-            {key:'color',label:'Farbe',type:'color',default:'#ec0016'},
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'subtitle',label:'Unterzeile',type:'text',default:'',placeholder:'z.B. Ziel: 900 | Vormonat: 756'},
-        ]
-    },
-    {
-        id:'ticker', icon:'📢', title:'Nachrichtenticker', tag:'info', tagLabel:'Content',
-        desc:'Scrollendes Laufband mit Badges für Neuigkeiten und Meldungen.',
-        height:50,
-        params:[
-            {key:'label',label:'Festes Label (links)',type:'text',default:'',placeholder:'z.B. Aktuell'},
-            {key:'speed',label:'Geschwindigkeit (Sek.)',type:'text',default:'30',placeholder:'Sekunden pro Durchlauf'},
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'items',label:'Nachrichten',type:'textarea',default:'Wichtig|Entgeltabschluss Februar;;Info|ZEF 4.0 ab KW 8;;Erfolg|Bestwert im Januar',placeholder:'Badge|Text;;Badge|Text (Badges: Wichtig, Info, Erfolg, Termin)'},
-        ]
-    },
-    {
-        id:'team-status', icon:'👥', title:'Teamstatus', tag:'data', tagLabel:'Daten',
-        desc:'Übersicht der Teamverfügbarkeit mit Status-Badges.',
-        height:400,
-        params:[
-            {key:'title',label:'Titel',type:'text',default:'Teamstatus',placeholder:'z.B. Abrechnungsteam Süd'},
-            {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],default:'light'},
-            {key:'compact',label:'Kompakt',type:'select',options:[['false','Normal'],['true','Kompakt']],default:'false'},
-            {key:'members',label:'Teammitglieder',type:'textarea',default:'Anna M.,Teamleitung,anwesend,#ec0016;;Thomas K.,Zeitwirtschaft,anwesend,#0078d4;;Sarah L.,Entgelt,urlaub,#16a34a;;Peter W.,Entgelt,krank,#8764b8',placeholder:'Name,Rolle,Status,Farbe;;... (Status: anwesend/urlaub/krank/extern)'},
-        ]
-    },
+const BASE=location.pathname.replace(/\/$/,'')+'/';
+function b64encode(s){return btoa(unescape(encodeURIComponent(s)))}
+
+const BL_OPTIONS=[['BW','Baden-Württemberg'],['BY','Bayern'],['BE','Berlin'],['BB','Brandenburg'],['HB','Bremen'],['HH','Hamburg'],['HE','Hessen'],['MV','Mecklenburg-Vorp.'],['NI','Niedersachsen'],['NW','Nordrhein-Westfalen'],['RP','Rheinland-Pfalz'],['SL','Saarland'],['SN','Sachsen'],['ST','Sachsen-Anhalt'],['SH','Schleswig-Holstein'],['TH','Thüringen']];
+
+const widgets=[
+    {id:'clock',icon:'🕐',title:'Uhr',tag:'live',tagLabel:'Live',desc:'Analoge + digitale Uhr mit Datum.',height:250,
+     params:[
+        {key:'mode',label:'Modus',type:'select',options:[['both','Analog + Digital'],['analog','Nur Analog'],['digital','Nur Digital']],def:'both'},
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'tz',label:'Zeitzone',type:'text',def:'Europe/Berlin',ph:'z.B. America/New_York'},
+        {key:'label',label:'Beschriftung',type:'text',def:'',ph:'z.B. MEZ'},
+    ]},
+    {id:'countdown',icon:'⏳',title:'Countdown',tag:'live',tagLabel:'Live',desc:'Timer bis zu einem Zieldatum mit Fortschrittsbalken.',height:180,
+     params:[
+        {key:'title',label:'Titel',type:'text',def:'Countdown',ph:'z.B. Entgeltabschluss'},
+        {key:'target',label:'Zieldatum',type:'datetime-local',def:'2026-02-28T23:59'},
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'compact',label:'Kompakt',type:'select',options:[['false','Normal'],['true','Kompakt']],def:'false'},
+        {key:'done',label:'Fertig-Text',type:'text',def:'Abgeschlossen',ph:''},
+    ]},
+    {id:'payroll',icon:'💰',title:'Entgeltabschluss',tag:'live',tagLabel:'Live',desc:'Automatischer Countdown zum n-ten Werktag im Folgemonat.',height:180,
+     params:[
+        {key:'title',label:'Titel',type:'text',def:'Entgeltabschluss',ph:''},
+        {key:'n',label:'Werktag Nr.',type:'select',options:[['3','3. Werktag'],['4','4. Werktag'],['5','5. Werktag'],['6','6. Werktag']],def:'4'},
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'compact',label:'Kompakt',type:'select',options:[['false','Normal'],['true','Kompakt']],def:'false'},
+        {key:'done',label:'Fertig-Text',type:'text',def:'Heute ist Abschlusstag',ph:''},
+    ]},
+    {id:'calendar',icon:'📅',title:'Kalender',tag:'live',tagLabel:'Live',desc:'Monatskalender mit Feiertagen und Schulferien nach Bundesland.',height:380,
+     params:[
+        {key:'bl',label:'Bundesland',type:'select',options:BL_OPTIONS,def:'SL'},
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'kw',label:'Kalenderwochen',type:'select',options:[['true','Anzeigen'],['false','Ausblenden']],def:'true'},
+    ]},
+    {id:'quote',icon:'💬',title:'Zitat des Tages',tag:'info',tagLabel:'Content',desc:'Wechselndes Motivationszitat.',height:200,
+     params:[
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'category',label:'Kategorie',type:'select',options:[['all','Alle'],['motivation','Motivation'],['teamwork','Teamwork'],['quality','Qualität']],def:'all'},
+        {key:'rotate',label:'Rotation',type:'select',options:[['daily','Täglich'],['hourly','Stündlich'],['random','Zufällig']],def:'daily'},
+    ]},
+    {id:'ticker',icon:'📢',title:'Nachrichtenticker',tag:'info',tagLabel:'Content',desc:'Scrollendes Laufband für Neuigkeiten. Visueller Editor.',height:50,isTicker:true,
+     params:[
+        {key:'label',label:'Festes Label (links)',type:'text',def:'',ph:'z.B. Aktuell'},
+        {key:'speed',label:'Geschwindigkeit (Sek.)',type:'text',def:'30',ph:''},
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+    ]},
+    {id:'menu',icon:'📂',title:'Menü / Navigation',tag:'info',tagLabel:'Navigation',desc:'Accordion-Menü mit Dropdown. Visueller Editor.',height:300,isMenu:true,
+     params:[
+        {key:'theme',label:'Theme',type:'select',options:[['light','Hell'],['dark','Dunkel']],def:'light'},
+        {key:'layout',label:'Layout',type:'select',options:[['vertical','Vertikal (Sidebar)'],['horizontal','Horizontal (Dropdown)']],def:'vertical'},
+        {key:'variant',label:'Darstellung',type:'select',options:[['','Standard'],['card','Karten']],def:''},
+        {key:'compact',label:'Kompakt',type:'select',options:[['false','Normal'],['true','Kompakt']],def:'false'},
+        {key:'open',label:'Anfangs geöffnet',type:'select',options:[['first','Erste Rubrik'],['all','Alle'],['none','Keine']],def:'first'},
+        {key:'target',label:'Link-Ziel',type:'select',options:[['_blank','Neues Fenster'],['_parent','Elternfenster'],['_top','Ganzes Fenster']],def:'_blank'},
+    ]},
 ];
 
-// === RENDER WIDGET GRID ===
-function renderGrid() {
-    const grid = document.getElementById('widgetGrid');
-    grid.innerHTML = widgets.map(w => `
+let menuData={sections:[
+    {label:'Zeitwirtschaft',icon:'🕐',links:[{text:'ZEF 4.0',url:'https://example.com/zef'},{text:'EAU Übersicht',url:'https://example.com/eau'}]},
+    {label:'Entgeltabrechnung',icon:'💰',links:[{text:'SAP HCM',url:'https://example.com/sap'},{text:'P40 Auswertungen',url:'https://example.com/p40'}]},
+    {label:'Formulare',icon:'📋',links:[{text:'Reisekostenantrag',url:'https://example.com/reise'},{text:'Urlaubsantrag',url:'https://example.com/urlaub'}]},
+]};
+let tickerData={items:[
+    {badge:'wichtig',text:'Entgeltabschluss Februar – Abgabefrist 28.02.'},
+    {badge:'info',text:'ZEF 4.0 Update ab KW 8 verfügbar'},
+    {badge:'erfolg',text:'Januar-Abschluss erfolgreich'},
+]};
+let currentWidgetId=null;
+
+function renderGrid(){
+    document.getElementById('widgetGrid').innerHTML=widgets.map(w=>`
         <div class="card" onclick="openPanel('${w.id}')">
-            <div class="card-preview">
-                <iframe src="${w.id}/" loading="lazy" scrolling="no"></iframe>
-            </div>
-            <div class="card-body">
-                <div class="card-tag ${w.tag}">${w.tagLabel}</div>
-                <div class="card-title">${w.icon} ${w.title}</div>
-                <div class="card-desc">${w.desc}</div>
-            </div>
-        </div>
-    `).join('');
+            <div class="card-preview"><iframe src="${w.id}/" loading="lazy" scrolling="no"></iframe></div>
+            <div class="card-body"><div class="card-tag ${w.tag}">${w.tagLabel}</div><div class="card-title">${w.icon} ${w.title}</div><div class="card-desc">${w.desc}</div></div>
+        </div>`).join('');
 }
 
-// === PANEL: OPEN/CLOSE ===
-function openPanel(id) {
-    const w = widgets.find(x => x.id === id);
-    if (!w) return;
-    const panel = document.getElementById('panel');
-    panel.innerHTML = `
-        <div class="panel-head">
-            <h2>${w.icon} ${w.title}</h2>
-            <button class="panel-close" onclick="closePanel()">✕</button>
-        </div>
+function openPanel(id){
+    const w=widgets.find(x=>x.id===id);if(!w)return;
+    currentWidgetId=id;
+    const menuHtml=w.isMenu?`
+        <h3 style="margin-top:18px">📝 Menüeinträge</h3>
+        <div class="menu-editor" id="menuEditor"></div>
+        <div class="me-toolbar">
+            <button class="btn btn-secondary btn-sm" onclick="addSection()">➕ Rubrik</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportConfig()">💾 Export</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">📂 Import</button>
+        </div>`:'';
+    const tickerHtml=w.isTicker?`
+        <h3 style="margin-top:18px">📝 Nachrichten</h3>
+        <div class="menu-editor" id="tickerEditor"></div>
+        <div class="me-toolbar">
+            <button class="btn btn-secondary btn-sm" onclick="addTickerItem()">➕ Nachricht</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportConfig()">💾 Export</button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">📂 Import</button>
+        </div>`:'';
+
+    document.getElementById('panel').innerHTML=`
+        <div class="panel-head"><h2>${w.icon} ${w.title}</h2><button class="panel-close" onclick="closePanel()">✕</button></div>
         <div class="panel-body">
             <div>
-                <div class="panel-preview" id="pp">
-                    <iframe id="pf" src="${w.id}/" style="height:${Math.max(w.height,200)}px"></iframe>
-                </div>
-                <div class="url-bar" style="margin-top:12px">
-                    <code id="urlDisplay">${location.origin}${BASE}${w.id}/</code>
-                    <button class="btn btn-sm btn-secondary" onclick="copyUrl()">URL</button>
-                </div>
+                <div class="panel-preview"><iframe id="pf" src="${w.id}/" style="height:${Math.max(w.height,200)}px"></iframe></div>
+                <div class="url-bar"><code id="urlDisplay">...</code><button class="btn btn-secondary btn-sm" onclick="copyUrl()">URL</button></div>
             </div>
             <div class="panel-config">
                 <h3>⚙️ Konfiguration</h3>
-                ${w.params.map(p => renderField(p)).join('')}
-                <div style="margin-top:16px">
-                    <button class="btn btn-primary" onclick="updatePreview('${w.id}')">🔄 Vorschau aktualisieren</button>
-                </div>
+                ${w.params.map(p=>renderField(p)).join('')}
+                ${menuHtml}
+                ${tickerHtml}
+                <p class="hint">Dropdowns: sofort · Textfelder: Enter</p>
             </div>
         </div>
         <div class="panel-footer">
-            <div class="embed-label">📋 Embed-Code für Intranet</div>
+            <div class="embed-label">📋 Embed-Code</div>
             <div class="embed-code" id="embedCode"></div>
-            <div class="btn-row">
-                <button class="btn btn-primary" onclick="copyEmbed()">📋 Code kopieren</button>
-                <button class="btn btn-secondary" onclick="copyEmbedSafe()">🛡️ Mit Klick-Blockade kopieren</button>
+            <div class="btn-group"><button class="btn btn-primary" onclick="copyEmbed()">📋 Code kopieren</button></div>
+        </div>`;
+    if(w.isMenu)renderMenuEditor();
+    if(w.isTicker)renderTickerEditor();
+    bindLiveEvents();liveUpdate();
+    document.getElementById('overlay').classList.add('open');document.body.style.overflow='hidden';
+}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';currentWidgetId=null}
+
+function renderField(p){
+    if(p.type==='select'){
+        const opts=p.options.map(([v,l])=>`<option value="${v}"${v===p.def?' selected':''}>${l}</option>`).join('');
+        return`<div class="field"><label>${p.label}</label><select data-key="${p.key}">${opts}</select></div>`;
+    }
+    return`<div class="field"><label>${p.label}</label><input type="${p.type}" data-key="${p.key}" value="${p.def}" placeholder="${p.ph||''}"></div>`;
+}
+
+// MENU EDITOR
+function renderMenuEditor(){
+    const ed=document.getElementById('menuEditor');if(!ed)return;
+    ed.innerHTML=menuData.sections.map((sec,si)=>`
+        <div class="me-section"><div class="me-section-head">
+            <input class="icon-input" value="${sec.icon}" placeholder="📁" onchange="menuData.sections[${si}].icon=this.value;scheduleUpdate()">
+            <input class="name-input" value="${esc(sec.label)}" placeholder="Rubrik" onchange="menuData.sections[${si}].label=this.value;scheduleUpdate()">
+            <button class="btn btn-secondary" onclick="rmSec(${si})">🗑</button>
+        </div><div class="me-links">
+            ${sec.links.map((lnk,li)=>`<div class="me-link">
+                <input class="link-text" value="${esc(lnk.text)}" placeholder="Bezeichnung" onchange="menuData.sections[${si}].links[${li}].text=this.value;scheduleUpdate()">
+                <input class="link-url" value="${esc(lnk.url)}" placeholder="https://..." onchange="menuData.sections[${si}].links[${li}].url=this.value;scheduleUpdate()">
+                <button class="btn btn-secondary" onclick="rmLink(${si},${li})">✕</button>
+            </div>`).join('')}
+            <span class="me-add-link" onclick="addLink(${si})">+ Link</span>
+        </div></div>`).join('');
+}
+function esc(s){return(s||'').replace(/"/g,'&quot;')}
+function addSection(){menuData.sections.push({label:'Neue Rubrik',icon:'📁',links:[{text:'Neuer Link',url:'https://'}]});renderMenuEditor();scheduleUpdate()}
+function rmSec(i){menuData.sections.splice(i,1);renderMenuEditor();scheduleUpdate()}
+function addLink(si){menuData.sections[si].links.push({text:'',url:'https://'});renderMenuEditor()}
+function rmLink(si,li){menuData.sections[si].links.splice(li,1);renderMenuEditor();scheduleUpdate()}
+
+// TICKER EDITOR
+const BADGE_OPTIONS=[['','— kein Badge —'],['wichtig','Wichtig'],['info','Info'],['erfolg','Erfolg'],['termin','Termin'],['hinweis','Hinweis']];
+function renderTickerEditor(){
+    const ed=document.getElementById('tickerEditor');if(!ed)return;
+    ed.innerHTML=tickerData.items.map((item,i)=>`
+        <div class="me-section" style="margin-bottom:6px">
+            <div class="me-section-head" style="padding:6px 10px">
+                <select style="width:90px;padding:4px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px" onchange="tickerData.items[${i}].badge=this.value;scheduleUpdate()">
+                    ${BADGE_OPTIONS.map(([v,l])=>`<option value="${v}"${item.badge===v?' selected':''}>${l}</option>`).join('')}
+                </select>
+                <input class="name-input" value="${esc(item.text)}" placeholder="Nachrichtentext" onchange="tickerData.items[${i}].text=this.value;scheduleUpdate()">
+                <button class="btn btn-secondary" onclick="rmTickerItem(${i})">✕</button>
             </div>
-        </div>
-    `;
-    updatePreview(w.id);
-    document.getElementById('overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+        </div>`).join('');
 }
+function addTickerItem(){tickerData.items.push({badge:'info',text:''});renderTickerEditor();scheduleUpdate()}
+function rmTickerItem(i){tickerData.items.splice(i,1);renderTickerEditor();scheduleUpdate()}
+let _t=null;function scheduleUpdate(){clearTimeout(_t);_t=setTimeout(liveUpdate,300)}
 
-function closePanel() {
-    document.getElementById('overlay').classList.remove('open');
-    document.body.style.overflow = '';
-}
-
-function renderField(p) {
-    if (p.type === 'select') {
-        const opts = p.options.map(([v,l]) => `<option value="${v}"${v===p.default?' selected':''}>${l}</option>`).join('');
-        return `<div class="field"><label>${p.label}</label><select data-key="${p.key}">${opts}</select></div>`;
-    }
-    if (p.type === 'textarea') {
-        return `<div class="field"><label>${p.label}</label><textarea data-key="${p.key}" rows="3" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:monospace;resize:vertical" placeholder="${p.placeholder||''}">${p.default}</textarea></div>`;
-    }
-    if (p.type === 'color') {
-        return `<div class="field"><label>${p.label}</label><div style="display:flex;gap:6px"><input type="color" data-key="${p.key}" value="${p.default}" style="width:40px;height:34px;padding:2px;cursor:pointer"><input type="text" data-key="${p.key}-text" value="${p.default}" style="flex:1" oninput="this.previousElementSibling.value=this.value"></div></div>`;
-    }
-    return `<div class="field"><label>${p.label}</label><input type="${p.type}" data-key="${p.key}" value="${p.default}" placeholder="${p.placeholder||''}"></div>`;
-}
-
-// === UPDATE PREVIEW ===
-function updatePreview(id) {
-    const w = widgets.find(x => x.id === id);
-    const params = new URLSearchParams();
-
-    w.params.forEach(p => {
-        let el = document.querySelector(`[data-key="${p.key}"]`);
-        if (!el) return;
-        let val = el.value;
-        if (p.type === 'color') {
-            const textEl = document.querySelector(`[data-key="${p.key}-text"]`);
-            if (textEl) val = textEl.value;
-        }
-        if (val && val !== p.default) params.set(p.key, val);
+// LIVE UPDATE
+function bindLiveEvents(){
+    document.querySelectorAll('.panel-config select[data-key]').forEach(el=>el.addEventListener('change',liveUpdate));
+    document.querySelectorAll('.panel-config input[data-key]').forEach(el=>{
+        if(el.type==='datetime-local')el.addEventListener('change',liveUpdate);
+        else el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();liveUpdate()}});
     });
-
-    const qs = params.toString();
-    const path = `${w.id}/${qs ? '?' + qs : ''}`;
-    const fullUrl = `${location.origin}${BASE}${path}`;
-
-    document.getElementById('pf').src = path;
-    document.getElementById('urlDisplay').textContent = fullUrl;
-
-    const h = w.height;
-    const embedStr = `<iframe src="${fullUrl}" width="100%" height="${h}" frameborder="0" style="border:none;border-radius:12px;overflow:hidden"></iframe>`;
-    document.getElementById('embedCode').textContent = embedStr;
+}
+function liveUpdate(){
+    if(!currentWidgetId)return;
+    const w=widgets.find(x=>x.id===currentWidgetId);
+    const params=new URLSearchParams();
+    w.params.forEach(p=>{const el=document.querySelector(`[data-key="${p.key}"]`);if(el&&el.value&&el.value!==p.def)params.set(p.key,el.value)});
+    if(w.isMenu)params.set('json',b64encode(JSON.stringify(menuData)));
+    if(w.isTicker)params.set('json',b64encode(JSON.stringify(tickerData)));
+    const qs=params.toString(),path=`${w.id}/${qs?'?'+qs:''}`,fullUrl=`${location.origin}${BASE}${path}`;
+    document.getElementById('pf').src=path;
+    document.getElementById('urlDisplay').textContent=fullUrl;
+    const h=w.height;
+    document.getElementById('embedCode').textContent=`<iframe src="${fullUrl}" width="100%" height="${h}" frameborder="0" style="border:none;border-radius:8px;overflow:hidden"></iframe>`;
 }
 
-// === COPY FUNCTIONS ===
-function copyEmbed() {
-    const code = document.getElementById('embedCode').textContent;
-    navigator.clipboard.writeText(code).then(() => showToast('✅ Embed-Code kopiert!'));
+// EXPORT / IMPORT
+function exportConfig(){
+    if(!currentWidgetId)return;const w=widgets.find(x=>x.id===currentWidgetId);const config={};
+    w.params.forEach(p=>{const el=document.querySelector(`[data-key="${p.key}"]`);if(el&&el.value&&el.value!==p.def)config[p.key]=el.value});
+    if(w.isMenu)config.menuData=menuData;
+    if(w.isTicker)config.tickerData=tickerData;
+    const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`widget-${w.id}-config.json`;a.click();
+    showToast('💾 Konfiguration exportiert');
 }
-function copyEmbedSafe() {
-    const code = document.getElementById('embedCode').textContent;
-    const safe = `<div style="position:relative;display:inline-block;width:100%">\n  ${code}\n  <div style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:10"></div>\n</div>`;
-    navigator.clipboard.writeText(safe).then(() => showToast('🛡️ Code mit Klick-Blockade kopiert!'));
-}
-function copyUrl() {
-    const url = document.getElementById('urlDisplay').textContent;
-    navigator.clipboard.writeText(url).then(() => showToast('🔗 URL kopiert!'));
-}
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
-}
+document.getElementById('importFile').addEventListener('change',function(e){
+    const file=e.target.files[0];if(!file)return;
+    const r=new FileReader();r.onload=function(ev){
+        try{const config=JSON.parse(ev.target.result);const w=widgets.find(x=>x.id===currentWidgetId);if(!w)return;
+        w.params.forEach(p=>{const el=document.querySelector(`[data-key="${p.key}"]`);if(el&&config[p.key]!==undefined)el.value=config[p.key]});
+        if(w.isMenu&&config.menuData){menuData=config.menuData;renderMenuEditor()}
+        if(w.isTicker&&config.tickerData){tickerData=config.tickerData;renderTickerEditor()}
+        liveUpdate();showToast('📂 Konfiguration importiert');}catch(err){showToast('❌ Ungültige Datei')}
+    };r.readAsText(file);this.value='';
+});
 
-// === TABS ===
-function showTab(name) {
-    document.querySelectorAll('.tabs').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    event.target.classList.add('active');
-}
-
-// === KEYBOARD ===
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-
-// === INIT ===
+// UI
+function copyEmbed(){navigator.clipboard.writeText(document.getElementById('embedCode').textContent).then(()=>showToast('✅ Embed-Code kopiert!'))}
+function copyUrl(){navigator.clipboard.writeText(document.getElementById('urlDisplay').textContent).then(()=>showToast('🔗 URL kopiert!'))}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+function showTab(name,el){document.querySelectorAll('.tabs').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');el.classList.add('active')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel()});
 renderGrid();
 </script>
 </body>
