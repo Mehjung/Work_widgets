@@ -8,7 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;display:flex;align-items:center;min-height:100vh;background:transparent;overflow:hidden;-webkit-font-smoothing:antialiased}
 .tk{width:100%;overflow:hidden;position:relative;padding:12px 0}
-.tr{display:inline-flex;white-space:nowrap;will-change:transform}
+.tr{display:inline-flex;white-space:nowrap;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .ti{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#333}
 .ti .dot{width:6px;height:6px;border-radius:50%;background:#ec0016;flex-shrink:0}
 .ti .badge{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
@@ -106,7 +106,7 @@ if(!items.length){
 
                 // Inject dynamic keyframe
                 const style=document.createElement('style');
-                style.textContent=`@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-${blockW}px)}}`;
+                style.textContent=`@keyframes sc{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(-${blockW}px,0,0)}}`;
                 document.head.appendChild(style);
             });
         });
