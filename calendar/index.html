@@ -185,7 +185,7 @@ function render(){
 
     // Weeks
     const totalCells=startDay+daysInMonth;
-    const rows=Math.ceil(totalCells/7);
+    const rows=6; // always 6 rows for consistent height
     for(let r=0;r<rows;r++){
         // KW
         if(showKW){
