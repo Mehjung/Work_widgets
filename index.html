@@ -346,7 +346,21 @@ function liveUpdate(){
     const qs=params.toString(),path=`${w.id}/${qs?'?'+qs:''}`,fullUrl=`${location.origin}${BASE}${path}`;
     document.getElementById('pf').src=path;
     document.getElementById('urlDisplay').textContent=fullUrl;
-    const h=w.height;
+    let h=w.height;
+    // Dynamic height for menu: tabbar/headers + space for one dropdown
+    if(w.isMenu && menuData.sections.length){
+        const maxLinks=Math.max(...menuData.sections.map(s=>s.links.length));
+        const layoutVal=document.querySelector('[data-key="layout"]')?.value||'vertical';
+        if(layoutVal==='horizontal'){
+            // tabbar ~50px + dropdown (links×37 + padding 16)
+            h=50+maxLinks*37+16;
+        } else {
+            // headers (sections×40) + dropdown (maxLinks×35 + padding 12)
+            h=menuData.sections.length*40+maxLinks*35+12;
+        }
+        h=Math.max(h,80); // minimum
+    }
+    document.getElementById('pf').style.height=h+'px';
     document.getElementById('embedCode').textContent=`<iframe src="${fullUrl}" width="100%" height="${h}" frameborder="0" style="border:none;border-radius:8px;overflow:hidden"></iframe>`;
 }
 
